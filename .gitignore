@@ -1,0 +1,34 @@
+# KiCad temporary and auto-save files
+*.kicad_prl
+*.bak
+*-bak
+*_autosave-*
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*-save.kicad_pcb
+*-save.kicad_sch
+~*.lck
+*.lck
+
+# KiCad automatic backups directory
+*-backups/
+
+# Editor & history directories
+.history/
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# KiCad reports and netlist exports (temporary)
+*.net
+*.rpt
+erc_report.*
+
+# Python scratch / temporary files
+__pycache__/
+*.py[cod]
+scripts/
