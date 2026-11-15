@@ -44,17 +44,20 @@ O projeto KiCad do DAS V2 está organizado em **5 folhas hierárquicas modulares
 
 ```
 DAS_V2/
-├── DAS_V2.kicad_pro              # Arquivo principal do projeto KiCad 10
-├── DAS_V2.kicad_sch              # Folha Raiz (Top-Level) com barramentos e interconexões
-├── 01_Power_Supply.kicad_sch     # Módulo 1: Entrada, Proteções, Buck 5V e LDO 3.3V
-├── 02_MCU_Core.kicad_sch         # Módulo 2: Microcontrolador, USB-C, SWD, Reset & Status
-├── 03_Sensors.kicad_sch          # Módulo 3: IMU BNO055 e Conector de Expansão I2C (Pitot)
-├── 04_GNSS_RTK.kicad_sch         # Módulo 4: u-blox ZED-F9P, Linha RF 50R, Bias-T e Proteção
-├── 05_Storage_Telemetry.kicad_sch# Módulo 5: MicroSD Card (SDIO) e Conector de Telemetria
-├── DAS_V2.kicad_pcb              # Placa de Circuito Impresso de 4 camadas
-├── sym-lib-table                 # Tabela de bibliotecas de símbolos
-├── fp-lib-table                  # Tabela de bibliotecas de footprints
-└── DAS_V2.pretty/                # Diretório de footprints customizados (Logo AeroDesign)
+├── hardware/
+│   ├── DAS_V2.kicad_pro              # Arquivo principal do projeto KiCad 10
+│   ├── DAS_V2.kicad_sch              # Folha Raiz (Top-Level) com barramentos e interconexões
+│   ├── 01_Power_Supply.kicad_sch     # Módulo 1: Entrada XT30, Proteção P-FET, Buck 5V e LDO 3.3V
+│   ├── 02_MCU_Core.kicad_sch         # Módulo 2: STM32G431, USB-C, SWD, HSE 16MHz, Reset & Status
+│   ├── 03_Sensors.kicad_sch          # Módulo 3: IMU BNO055, Barômetro MS5611 e Mux I2C3 PCA9548APW
+│   ├── 04_GNSS_RTK.kicad_sch         # Módulo 4: u-blox ZED-F9P, Linha RF 50R, Bias-T e Porta RTCM
+│   ├── 05_Storage_Telemetry.kicad_sch# Módulo 5: MicroSD (SPI), CAN (VESC + Exp.), RF e Pixhawk
+│   ├── DAS_V2.kicad_pcb              # Placa de Circuito Impresso de 4 camadas (50 x 90 mm)
+│   ├── sym-lib-table                 # Tabela de bibliotecas de símbolos
+│   ├── fp-lib-table                  # Tabela de bibliotecas de footprints
+│   └── DAS_V2.pretty/                # Diretório de footprints customizados (Logo AeroDesign)
+├── docs/                             # Documentação técnica e renders 3D (docs/images/)
+└── firmware/                         # Firmware embarcado STM32G431CBT6
 ```
 
 ### Detalhamento das Folhas:
@@ -73,11 +76,11 @@ DAS_V2/
 * **Debug & Gravação:** Conector SWD padrão (SWDIO em PA13, SWDCLK em PA14, NRST, 3V3, GND).
 * **I/O de Operação:** Botão táctil de Reset, botão de usuário/bootloader (BOOT0 com pull-down de 10k), LED RGB inteligente (WS2812B ou LEDs discretos de status) e LED indicador de alimentação 3.3V.
 
-### Folha 3: `03_Sensors.kicad_sch` (Navegação Inercial e Expansão de Telemetria)
-* **IMU 9-DOF:** Bosch BNO055 (Acelerômetro 3 eixos, Giroscópio 3 eixos, Magnetômetro 3 eixos com processador Cortex-M0 interno para fusão sensorial em tempo real e saída em quatérnions).
-* **Eliminação do Barômetro Onboard (BMP581):** Simplificação arquitetural que elimina o chip LGA-10 microscópico ($2\times 2\text{ mm}$), evitando riscos de montagem manual e erros de pressão estática interna na fuselagem. A altitude geométrica de precisão centimétrica é fornecida diretamente pelo receptor u-blox ZED-F9P RTK.
-* **Barramento I2C:** Par único de resistores de pull-up ($2.2\text{ k}\Omega$) para 3.3V (conectado aos pinos PB6/PB7 do MCU).
-* **Conector de Expansão I2C:** Conector **JST-PH 2.0 mm (4 pinos)** para acoplamento do sensor de pressão diferencial (Tubo de Pitot externo para medição de velocidade indicada e dados atmosféricos).
+### Folha 3: `03_Sensors.kicad_sch` (Navegação Inercial, Barometria e Expansão I2C)
+* **IMU 9-DOF:** Bosch **BNO055** (Acelerômetro 3 eixos, Giroscópio 3 eixos, Magnetômetro 3 eixos com processador Cortex-M0 interno para fusão sensorial em tempo real e saída em quatérnions via I2C1, endereço `0x28`).
+* **Barômetro Onboard:** TE **MS5611-01BA** no barramento I2C1 (`0x77`), fornecendo pressão barométrica de alta resolução (24 bits) para redundância de altitude e cálculo de densidade do ar.
+* **Barramento I2C1:** Par único de resistores de pull-up ($2.2\text{ k}\Omega$) para 3.3V (conectado aos pinos PB6/PB7 do MCU).
+* **Multiplexador I2C3:** Texas Instruments **PCA9548APW** (`0x70`) conectado aos pinos PA8/PB5 do MCU, disponibilizando 4 conectores **JST-PH 2.0 mm** (`J4`, `J12`, `J13`, `J14`) nos canais `0..3` para tubo de Pitot e sensores externos sem conflito de endereço.
 
 ### Folha 4: `04_GNSS_RTK.kicad_sch` (Posicionamento de Alta Precisão)
 * **Receptor GNSS:** u-blox ZED-F9P-02B (Receptor RTK multibanda L1/L2 com precisão centimétrica).
@@ -88,14 +91,15 @@ DAS_V2/
 * **Antena RF & Bias-T:** Conector SMA fêmea de borda, indutor de RF de 47 nH e resistor limitador de corrente para alimentação da antena ativa através de `VCC_RF`.
 * **Entrada de Correção RTK:** Conector **JST-PH 2.0 mm (4 pinos)** dedicado para entrada de mensagens RTCM (via rádio base de solo).
 
-### Folha 5: `05_Storage_Telemetry.kicad_sch` (Gravação, Telemetria RF e CAN VESC)
-* **Armazenamento:** Slot para cartão MicroSD com filtragem de desacoplamento reforçada ($10\,\mu\text{F} + 100\,\text{nF}$) operando via barramento SPI de alta velocidade com DMA (linhas `SD_SCK`, `SD_MOSI`, `SD_MISO`, `SD_CS`).
-* **Telemetria de Voo RF:** Conector **JST-PH 2.0 mm (4 ou 6 pinos)** para rádio modem de longo alcance (ex.: LoRa SX1262, RFD900 ou Holybro Telemetry) ligado à UART2 do MCU.
-* **Interface de Barramento CAN (VESC):**
-  * Transceptor CAN 3.3V de alta velocidade (Texas Instruments **SN65HVD230DR** ou similar).
-  * Diodo TVS duplo dedicado para proteção de barramento contra transientes e ESD (**PESD2CAN** ou **NUP2105L** em SOT-23).
-  * Terminação de $120\,\Omega$ split ($2\times 60\,\Omega + 4.7\,\text{nF}$ para terra) com *jumper* de solda para ligar/desligar.
-  * Conector **JST-PH 2.0 mm (4 pinos)** no padrão VESC: Pino 1 (+5V_AUX com jumper aberto), Pino 2 (CAN_H), Pino 3 (CAN_L), Pino 4 (GND).
+### Folha 5: `05_Storage_Telemetry.kicad_sch` (Gravação, Telemetria RF, Pixhawk e CAN VESC)
+* **Armazenamento:** Slot para cartão MicroSD (`J5`, Hirose DM3AT no lado Bottom) com filtragem de desacoplamento reforçada ($10\,\mu\text{F} + 100\,\text{nF}$) operando via barramento SPI1 de alta velocidade com DMA (linhas `SD_SCK`, `SD_MOSI`, `SD_MISO`, `SD_CS`).
+* **Telemetria de Voo RF (`J6`):** Conector **JST-PH 2.0 mm (4 pinos)** para rádio modem de longo alcance (ex.: LoRa SX1262, RFD900 ou Holybro Telemetry) ligado à `USART2` do MCU.
+* **Interface Pixhawk / MAVLink (`J11`):** Conector **JST-PH 2.0 mm (4 pinos)** ligado à `USART3` (`PB10`/`PB11`) para integração serial com controladora de voo externa.
+* **Interface de Barramento CAN (VESC + Expansão):**
+  * Transceptor CAN 3.3V de alta velocidade (Texas Instruments **SN65HVD230DR**).
+  * Diodo TVS duplo dedicado para proteção de barramento contra transientes e ESD (**NUP2105L** em SOT-23).
+  * Terminação de $120\,\Omega$ split ($2\times 60\,\Omega$ + $4.7\,\text{nF}$ para terra) com *jumpers* de solda (`JP1`, `JP2`) para ligar/desligar.
+  * Dois conectores **JST-PH 2.0 mm (4 pinos)**: `J7` (padrão VESC) e `J10` (expansão CAN).
 
 ---
 
@@ -123,16 +127,16 @@ gantt
     dateFormat  YYYY-MM-DD
     section Fase 1: Esquemático
     Criação da arquitetura hierárquica e folhas :done, 2026-11-01, 1d
-    Definição de pinout do MCU e periféricos     :active, 2026-11-02, 2d
-    Validação elétrica e ERC no KiCad            : 2026-11-04, 2d
+    Definição de pinout do MCU e periféricos     :done, 2026-11-02, 2d
+    Validação elétrica e ERC no KiCad            :done, 2026-11-04, 2d
     section Fase 2: BOM e Componentes
-    Seleção de Part Numbers (JLCPCB / Mouser)   : 2026-11-06, 2d
-    Padronização para tamanhos 0603/0805        : 2026-11-08, 1d
+    Seleção de Part Numbers (JLCPCB / Mouser)   :done, 2026-11-06, 2d
+    Padronização para tamanhos 0603/0805        :done, 2026-11-08, 1d
     section Fase 3: Layout da PCB
-    Definição do contorno mecânico da placa     : 2026-11-09, 1d
-    Floorplanning e posicionamento estratégico  : 2026-11-10, 2d
-    Roteamento de RF, USB e Linhas de Potência  : 2026-11-12, 3d
-    Checagem de DRC e planos de terra           : 2026-11-15, 1d
+    Definição do contorno mecânico (50x90 mm)   :done, 2026-11-09, 1d
+    Floorplanning e posicionamento estratégico  :done, 2026-11-10, 2d
+    Roteamento de RF, USB e Linhas de Potência  :done, 2026-11-12, 3d
+    Checagem final de DRC e planos de terra     :active, 2026-11-15, 1d
     section Fase 4: Fabricação e Testes
     Geração de Gerbers e pedido de fabricação   : 2026-11-16, 1d
     Montagem da placa (solda manual guiada)     : 2026-11-25, 2d
@@ -143,15 +147,16 @@ gantt
 
 ## 6. Lista de Verificação Pré-Fabricação (Checklist de Ouro)
 
-- [ ] **Pino 38 (`V_USB`) do ZED-F9P:** Tensão verificada em $\le 3.3\text{ V}$ em qualquer cenário de conexão?
-- [ ] **Clock do MCU:** Cristal HSE previsto no circuito ou modo CRS validado para o chip selecionado?
-- [ ] **Alimentação:** Corrente máxima do estágio Buck dimensionada com folga de pelo menos 50%?
-- [ ] **Pull-ups de I2C:** Existe apenas um único par de resistores no barramento compartilhado?
-- [ ] **RF 50 Ω:** Impedância da trilha de antena calculada de acordo com o stackup exato do fabricante da PCB?
-- [ ] **Barramento CAN:** Transceptor 3.3V com proteção TVS PESD2CAN, terminação split 120 Ω configurável e isolamento do pino +5V do VESC?
-- [ ] **Padronização Mecânica:** Todos os conectores de chicotes externos usam footprint JST-PH 2.0 mm com indicação clara de pinagem na serigrafia?
-- [ ] **Soldabilidade Manual:** Todos os componentes passivos discretos são 0603 ou maiores com pads *HandSolder*?
-- [ ] **Proteção de Inversão:** O limite de tensão Gate-Source ($V_{GS}$) do MOSFET está protegido com zener/divisor?
+- [x] **Pino 38 (`V_USB`) do ZED-F9P:** Tensão limitada a $\approx 3.33\text{ V}$ via divisor resistivo 10k/20k em qualquer cenário de conexão.
+- [x] **Clock do MCU:** Cristal HSE de $16\text{ MHz}$ (`Y1`) com capacitores de carga de $15\text{ pF}$ (`C10`/`C11`) posicionado no layout.
+- [x] **Alimentação:** Buck `TPS563200` (5V @ 2A) + LDO `AP2112K-3.3` (estável com cerâmicos) dimensionados com folga térmica e de corrente.
+- [x] **Pull-ups de I2C:** Par único de resistores de $2.2\text{ k}\Omega$ no barramento I2C1 compartilhado (`BNO055` + `MS5611`) e pull-ups dedicados nos canais do mux I2C3 (`PCA9548APW`).
+- [ ] **RF 50 Ω:** Conferir impedância final da trilha de antena (`J8` → `U7`) com o stackup exato do fabricante da PCB antes do pedido.
+- [x] **Barramento CAN:** Transceptor 3.3V (`SN65HVD230`) com proteção TVS `NUP2105L`, terminação split 120 Ω configurável (`JP1`/`JP2`) e conector padrão VESC (`J7` + `J10`).
+- [x] **Padronização Mecânica:** Todos os conectores de chicotes externos usam footprint JST-PH 2.0 mm (`J4`, `J6`, `J7`, `J9`–`J14`) com identificação na serigrafia.
+- [x] **Soldabilidade Manual:** Passivos discretos padronizados em 0603 com pads *HandSolder*.
+- [x] **Proteção de Inversão:** P-MOSFET `AO3401A` protegido com Zener `BZX84C10` (10V).
+- [ ] **DRC Final Limpo:** Conectar `C37` e `C38` (atualmente fora da borda no `B.Cu`) e zerar violações/avisos do DRC antes de gerar os Gerbers.
 
 ---
 *Documento aprovado para a reformulação do projeto DAS V2 da Equipe AeroDesign.*

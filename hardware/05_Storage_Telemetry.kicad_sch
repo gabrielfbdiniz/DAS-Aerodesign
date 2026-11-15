@@ -2294,16 +2294,6 @@
 	)
 	(wire
 		(pts
-			(xy 309.88 64.77) (xy 322.58 64.77)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "68e7859d-c871-4646-923f-df93c9c0999e")
-	)
-	(wire
-		(pts
 			(xy 93.98 59.69) (xy 135.89 59.69)
 		)
 		(stroke
@@ -2424,6 +2414,16 @@
 	)
 	(wire
 		(pts
+			(xy 309.88 64.77) (xy 322.58 64.77)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "85ad8ffc-358a-4947-b63f-92a28578c631")
+	)
+	(wire
+		(pts
 			(xy 314.96 72.39) (xy 314.96 62.23)
 		)
 		(stroke
@@ -2511,16 +2511,6 @@
 			(type default)
 		)
 		(uuid "90563764-2641-4893-acd6-01ee70b49326")
-	)
-	(wire
-		(pts
-			(xy 309.88 67.31) (xy 322.58 67.31)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "94ef5d73-a31b-4829-8178-bb00ffbc5245")
 	)
 	(wire
 		(pts
@@ -2914,6 +2904,16 @@
 	)
 	(wire
 		(pts
+			(xy 309.88 67.31) (xy 322.58 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f79100b2-874e-4406-affc-fb7465029190")
+	)
+	(wire
+		(pts
 			(xy 132.08 201.93) (xy 132.08 200.66)
 		)
 		(stroke
@@ -3071,17 +3071,6 @@
 		)
 		(uuid "a68d3959-53c2-44dc-8318-ace5955866ce")
 	)
-	(hierarchical_label "TELE_RX"
-		(shape output)
-		(at 322.58 67.31 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "ae611ec3-a836-4c75-a757-7ff2dec51a16")
-	)
 	(hierarchical_label "SD_CS"
 		(shape input)
 		(at 135.89 52.07 0)
@@ -3092,17 +3081,6 @@
 			(justify left)
 		)
 		(uuid "b3b8c03e-2d03-4859-9c68-e65ab68993f4")
-	)
-	(hierarchical_label "TELE_TX"
-		(shape input)
-		(at 322.58 64.77 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "c3b6e755-3a89-4e4b-af42-cdd30a9daad6")
 	)
 	(hierarchical_label "CAN_RX"
 		(shape output)
@@ -3137,6 +3115,17 @@
 		)
 		(uuid "dd0e2bf5-677e-414a-9ae4-f71c51d46e62")
 	)
+	(hierarchical_label "TELE_TX"
+		(shape input)
+		(at 322.58 67.31 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "e0d1fb5d-f429-4137-8bc2-c4b971b000d4")
+	)
 	(hierarchical_label "+5V"
 		(shape input)
 		(at 353.06 91.44 180)
@@ -3169,6 +3158,17 @@
 			(justify left)
 		)
 		(uuid "f3b5bcbe-b898-42f2-80e1-09d170bc998f")
+	)
+	(hierarchical_label "TELE_RX"
+		(shape output)
+		(at 322.58 64.77 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "f98f6067-ed37-4722-9801-a73081839d46")
 	)
 	(hierarchical_label "SD_CMD"
 		(shape bidirectional)

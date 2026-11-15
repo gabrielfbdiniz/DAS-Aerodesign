@@ -1,7 +1,18 @@
 # Relatório de Auditoria Elétrica e Validação de Esquemático: DAS V2
 **Projeto:** AeroDesign — DAS V2 (Data Acquisition System)  
-**Data:** 08 de Novembro de 2026  
-**Status do Esquemático:** ⚠️ **NÃO LIBERADO PARA FABRICAÇÃO IMEDIATA SEM AS CORREÇÕES CRÍTICAS**
+**Data da Auditoria Inicial:** 08 de Novembro de 2026  
+**Última Atualização:** 15 de Novembro de 2026 (Pós-Layout 2D)  
+**Status Atual:** 🟡 **ESQUEMÁTICO VALIDADO (ERC 0 ERROS) — AJUSTE FINAL DE DRC PENDENTE ANTES DOS GERBERS**
+
+> [!NOTE]
+> **Atualização Pós-Layout 2D (15/11/2026):** As correções críticas levantadas nesta auditoria foram aplicadas ao projeto e o layout 2D da PCB de 4 camadas ($50 \times 90\text{ mm}$, 128 componentes) foi concluído:
+> - **U2:** Substituído por **AP2112K-3.3** (estável com capacitores cerâmicos) ✅
+> - **D7:** Especificado como **PESD5V0X1BA** (TVS de baixa capacitância na linha RF) ✅
+> - **Y1:** Cristal HSE definido em **16 MHz** ✅
+> - **Footprints:** Todos os **128 componentes** possuem *footprint* atribuído e posicionado na PCB ✅
+> - **KiCad ERC:** **0 violações** ✅
+> - **KiCad DRC (pendente antes da fabricação):** 4 itens desconectados em `C37` e `C38` (`+5V` e `GND` no `B.Cu`, posicionados fora da borda direita) e 1 aviso de largura de conexão na zona `GND` (`F.Cu`).
+> - **Lembrete de Firmware (`PB8/BOOT0`):** Configurar `nSWBOOT0 = 0` e `nBOOT0 = 1` nos Option Bytes via SWD na primeira gravação.
 
 ---
 
