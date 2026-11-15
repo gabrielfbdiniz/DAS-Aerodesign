@@ -42,27 +42,30 @@ Projetada a partir do zero para superar as limitações térmicas e de estabilid
 
 ## 3. Arquitetura Estrutural do Repositório
 
-O projeto adota design modular e hierárquico no KiCad 10:
+O repositório adota estrutura de **monorepo** separando hardware (KiCad 10), firmware (`STM32G431CBT6`) e documentação:
 
 ```
 DAS_V2/
-├── .gitignore                      # Regras de exclusão de arquivos temporários e de backup
-├── README.md                       # Documentação principal do projeto
-├── DAS_V2.kicad_pro                # Arquivo principal do projeto KiCad 10
-├── DAS_V2.kicad_sch                # Folha Raiz (Top-Level) com barramentos interfolhas
-├── 01_Power_Supply.kicad_sch       # Módulo 1: Entrada XT30, Proteção P-FET, Buck 5V e LDO 3.3V
-├── 02_MCU_Core.kicad_sch           # Módulo 2: STM32G431, USB-C, SWD, HSE 16MHz, Reset & Status
-├── 03_Sensors.kicad_sch            # Módulo 3: IMU Bosch BNO055 e Conector Pitot I2C
-├── 04_GNSS_RTK.kicad_sch           # Módulo 4: u-blox ZED-F9P, Bias-T, Linha RF 50R e Porta RTCM
-├── 05_Storage_Telemetry.kicad_sch  # Módulo 5: MicroSD Card (SPI), Transceptor CAN e Telemetria RF
-├── DAS_V2.kicad_pcb                # Layout da Placa de Circuito Impresso (Stackup 4 camadas)
-├── fp-lib-table                    # Tabela de bibliotecas de footprints locais
-├── sym-lib-table                   # Tabela de bibliotecas de símbolos locais
-├── DAS_V2.pretty/                  # Diretório de footprints customizados (Logo AeroDesign)
-└── docs/                           # Documentação Técnica Aprofundada
-    ├── GUIA_OPERACAO_RTK_PPK.md    # Guia Completo: Operação RTK, Base de Solo, NTRIP e PPK
-    ├── RELATORIO_AUDITORIA_ESQUEMATICO_DAS_V2.md # Auditoria Forense Completa contra Datasheets dos CIs
-    └── PLANO_DE_ACAO.md            # Diagnóstico forense da V1 e diretrizes do redesenho V2
+├── .gitignore                          # Regras de exclusão de temporários, backups e builds
+├── README.md                           # Documentação principal do projeto
+├── docs/                               # Documentação Técnica Aprofundada
+│   ├── GUIA_OPERACAO_RTK_PPK.md        # Guia Completo: Operação RTK, Base de Solo, NTRIP e PPK
+│   ├── RELATORIO_AUDITORIA_ESQUEMATICO_DAS_V2.md
+│   └── PLANO_DE_ACAO.md                # Diagnóstico forense da V1 e diretrizes do redesenho V2
+├── hardware/                           # Projeto KiCad 10 (Esquemático, PCB e Bibliotecas)
+│   ├── DAS_V2.kicad_pro                # Arquivo principal do projeto KiCad 10
+│   ├── DAS_V2.kicad_sch                # Folha Raiz (Top-Level) com barramentos interfolhas
+│   ├── 01_Power_Supply.kicad_sch       # Módulo 1: Entrada XT30, Proteção P-FET, Buck 5V e LDO 3.3V
+│   ├── 02_MCU_Core.kicad_sch           # Módulo 2: STM32G431, USB-C, SWD, HSE 16MHz, Reset & Status
+│   ├── 03_Sensors.kicad_sch            # Módulo 3: IMU BNO055, Barômetro MS5611 e Mux I2C3 PCA9548APW
+│   ├── 04_GNSS_RTK.kicad_sch           # Módulo 4: u-blox ZED-F9P, Bias-T, Linha RF 50R e Porta RTCM
+│   ├── 05_Storage_Telemetry.kicad_sch  # Módulo 5: MicroSD, CAN (VESC + Expansão), RF e Pixhawk
+│   ├── DAS_V2.kicad_pcb                # Layout da Placa de Circuito Impresso (Stackup 4 camadas)
+│   ├── fp-lib-table                    # Tabela de bibliotecas de footprints locais
+│   ├── sym-lib-table                   # Tabela de bibliotecas de símbolos locais
+│   └── DAS_V2.pretty/                  # Diretório de footprints customizados (Logo AeroDesign)
+└── firmware/                           # Firmware embarcado STM32G431CBT6
+    └── README.md                       # Mapeamento de periféricos e instruções de firmware
 ```
 
 ---
@@ -87,7 +90,7 @@ DAS_V2/
    cd "DAS V2"
    ```
 3. Abra o arquivo de projeto:
-   * Abra o KiCad e selecione `DAS_V2.kicad_pro`.
+   * Abra o KiCad e selecione `hardware/DAS_V2.kicad_pro`.
    * Clique em `Esquemático (Eeschema)` para visualizar as folhas hierárquicas.
    * Clique em `Placa (Pcbnew)` para visualizar o layout 2D/3D.
 

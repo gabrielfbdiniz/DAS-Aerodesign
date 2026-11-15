@@ -32,3 +32,19 @@ erc_report.*
 __pycache__/
 *.py[cod]
 scripts/
+
+# Firmware build artifacts (STM32CubeIDE / CMake / PlatformIO)
+firmware/build/
+Debug/
+Release/
+cmake-build-*/
+.pio/
+*.elf
+*.bin
+*.hex
+*.map
+*.o
+*.d
+*.su
+*.cyclo
+*.list
