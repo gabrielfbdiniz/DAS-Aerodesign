@@ -758,12 +758,12 @@
       "02_MCU_Core"
     ],
     [
-      "bdb44ade-b1a7-46d3-9978-90729c7ca016",
-      "05_Armazenamento_Telemetria"
-    ],
-    [
       "b50a24d8-6ad8-499b-a3ce-f0380ea6d8b0",
       "03_Sensores"
+    ],
+    [
+      "bdb44ade-b1a7-46d3-9978-90729c7ca016",
+      "05_Armazenamento_Telemetria"
     ]
   ],
   "text_variables": {},
